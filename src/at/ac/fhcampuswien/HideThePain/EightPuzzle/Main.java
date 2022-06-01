@@ -1,26 +1,74 @@
 package at.ac.fhcampuswien.HideThePain.EightPuzzle;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main {
 
+    public static void main(String[] args) throws Exception {
 
-    public static void main(String[] args) {
+        System.out.println("Which heuristic function do you wish to use?");
+        System.out.println("Press 0 to use Hamming");
+        System.out.println("Press 1 to use Manhattan (recommended)");
+        System.out.println("Press 2 to quit the program.");
 
-        System.out.println("Puzzle solved, thank you for choosing \"EightPuzzle\", by \"Hide The Pain\"");
+        Scanner scanner = new Scanner(System.in);
 
-        Node node = new Node();
-        System.out.println(Arrays.toString(node.getBoardArray()[0]));
-        System.out.println(Arrays.toString(node.getBoardArray()[1]));
-        System.out.println(Arrays.toString(node.getBoardArray()[2]));
+        while(true){
+            int[][] randomBoard = GetRandomBoard.randomBoard();
 
+            int[][] initialState = new int[3][3];
 
-        System.out.println(node.manhattan());
+            //cloning initialState to random Board manually, .clone() referenced the inner objects
+            //of initialState to the inner objects of randomBoard.
+            for(int i = 0; i < 3; i++){
+                System.arraycopy(randomBoard[i], 0, initialState[i], 0, 3);
+            }
+            Node node;
+            System.out.print("input: ");
+            int in = scanner.nextInt();
+            if(in == 0){
+                node = new Node(randomBoard, initialState, false);
+            } else if (in == 1) {
+                node = new Node(randomBoard, initialState, true);
+            } else if(in == 2){
+                break;
+            } else {
+                System.out.println("Invalid input, defaulting to Manhattan Distance.");
+                node = new Node(randomBoard, initialState, true);
+            }
 
+            Solve solver = new Solve(node);
 
+            long startTime = System.nanoTime();
 
+            boolean retry = false;
 
+            while(true){
+                System.out.println("Randomly shuffled puzzle:");
 
+                System.out.println(Arrays.toString(node.getCurrentStateAsArray()[0]));
+                System.out.println(Arrays.toString(node.getCurrentStateAsArray()[1]));
+                System.out.println(Arrays.toString(node.getCurrentStateAsArray()[2]));
+                try{
+                    retry = solver.solve();
+                }catch (Exception e){
+                    System.out.println(e);
+                }
+                if(!retry){
+                    System.out.println("Trying another puzzle");
+                    randomBoard = GetRandomBoard.randomBoard();
+                    node = new Node(randomBoard, initialState, node.isUseManhattan());
+                    solver = new Solve(node);
+                } else {
+                    break;
+                }
+            }
 
+            long elapsedTime = System.nanoTime() - startTime;
+
+            System.out.println("Elapsed Time: " + elapsedTime/1000000 + " milliseconds");
+        }
+        System.out.println("\nThank you for choosing \"EightPuzzle\", by \"Hide The Pain\".");
     }
 }
