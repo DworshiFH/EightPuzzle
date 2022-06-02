@@ -83,10 +83,7 @@ public class Node {
                 retBoard[originX][originY] = currentState[targetX][targetY];
                 retBoard[targetX][targetY] = 0;
 
-                Node ret = new Node(retBoard, this.initialState, this.useManhattan);
-                //ret.setParentState(newParenState);
-
-                return ret;
+                return new Node(retBoard, this.initialState, this.useManhattan);
             }
         }
         return null;
@@ -96,7 +93,6 @@ public class Node {
         //cloning Node manually, .clone() referenced the inner objects
         //of new Node's board to the inner objects of previous Node's board.
         int[][] newCurrentState = new int[3][3];
-        int[][] newParentState = new int[3][3];
 
         for(int i = 0; i < 3; i++){
             System.arraycopy(this.currentState[i], 0, newCurrentState[i], 0, 3);

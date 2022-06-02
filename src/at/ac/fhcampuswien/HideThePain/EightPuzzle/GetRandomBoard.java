@@ -31,33 +31,33 @@ public class GetRandomBoard {
 
             moveHere = getRandomInt(0, 3);
 
-            switch (moveHere){
-                case 0:
+            switch (moveHere) {
+                case 0 -> {
                     tmp = node.switchTiles(indexZeroX, indexZeroY, indexZeroX + 1, indexZeroY);
-                    if(tmp != null){
+                    if (tmp != null) {
                         node = tmp.copyNode();
                     }
-                    break;
-                case 1:
+                }
+                case 1 -> {
                     tmp = node.switchTiles(indexZeroX, indexZeroY, indexZeroX - 1, indexZeroY);
-                    if(tmp != null){
+                    if (tmp != null) {
                         node = tmp.copyNode();
                     }
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     tmp = node.switchTiles(indexZeroX, indexZeroY, indexZeroX, indexZeroY + 1);
-                    if(tmp != null){
+                    if (tmp != null) {
                         node = tmp.copyNode();
                     }
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     tmp = node.switchTiles(indexZeroX, indexZeroY, indexZeroX, indexZeroY - 1);
-                    if(tmp != null){
+                    if (tmp != null) {
                         node = tmp.copyNode();
                     }
-                    break;
-                default:
-                    break;
+                }
+                default -> {
+                }
             }
             tmp = null;
         }
