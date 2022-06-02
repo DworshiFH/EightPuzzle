@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         System.out.println("Which heuristic function do you wish to use?");
         System.out.println("Press 0 to use Hamming");

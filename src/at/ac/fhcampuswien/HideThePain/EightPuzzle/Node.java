@@ -8,8 +8,6 @@ public class Node {
 
     private final int[][] initialState;
 
-    private int[][] parentState;
-
     private final boolean useManhattan;
 
     private int f = 0;
@@ -24,15 +22,6 @@ public class Node {
         };
         this.initialState = initialState;
         this.useManhattan = useManhattan;
-
-        /*if(useManhattan){
-            this.h = manhattan_H();
-            this.g = manhattan_G();
-        } else {
-            this.h = hamming_H();
-            this.g = hamming_G();
-        }
-        this.f = g + h;*/
     }
 
     public int[][] getCurrentStateAsArray() {
@@ -61,10 +50,6 @@ public class Node {
 
     public void setH(int h) {
         this.h = h;
-    }
-
-    public void setParentState(int[][] parentState) {
-        this.parentState = parentState;
     }
 
     public int[][] getGoalState() {
@@ -99,15 +84,13 @@ public class Node {
                 retBoard[targetX][targetY] = 0;
 
                 Node ret = new Node(retBoard, this.initialState, this.useManhattan);
-                ret.setParentState(newParenState);
+                //ret.setParentState(newParenState);
 
                 return ret;
             }
         }
         return null;
     }
-
-
 
     public Node copyNode(){
         //cloning Node manually, .clone() referenced the inner objects
@@ -119,17 +102,7 @@ public class Node {
             System.arraycopy(this.currentState[i], 0, newCurrentState[i], 0, 3);
         }
 
-        if(this.parentState != null){
-            for(int i = 0; i < 3; i++){
-                System.arraycopy(this.parentState[i], 0, newParentState[i], 0, 3);
-            }
-        } else {
-            newParentState = null;
-        }
-
-
         Node ret = new Node(newCurrentState, this.initialState, this.useManhattan);
-        ret.setParentState(newParentState);
 
         ret.setF(this.getF());
         ret.setG(this.getG());
@@ -138,65 +111,12 @@ public class Node {
         return ret;
     }
 
-    public int distanceToInitial(){
-        if(useManhattan){
-            return manhattanToInitial();
-        } else {
-            return hammingToInitial();
-        }
-    }
-
-    public int distanceToParent(){
-        if(useManhattan){
-            return manhattanToParent();
-        } else {
-            return hammingToParent();
-        }
-    }
-
     public int distanceToGoal(){
         if(useManhattan){
             return manhattanToGoal();
         } else {
             return hammingToGoal();
         }
-    }
-
-    private int manhattanToInitial(){
-        int manhattan = 0;
-        int node_current_num;
-
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if(initialState[i][j] == 0) continue;
-
-                //get the tile number at i and j from initial
-                node_current_num = initialState[i][j];
-
-                //compare indexes of current num to indexes of goal position
-                for(int i_diff = 0; i_diff < 3; i_diff++) {
-                    for (int j_diff = 0; j_diff < 3; j_diff++) {
-                        if(currentState[i_diff][j_diff] == node_current_num){
-                            //add the absolute differences to int manhattan
-                            manhattan = manhattan + Math.abs(i - i_diff) + Math.abs(j - j_diff);
-                        }
-                    }
-                }
-            }
-        }
-        return manhattan;
-    }
-
-    private int hammingToInitial(){
-        int hamming = 0;
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if(currentState[i][j] != initialState[i][j]){
-                    hamming ++;
-                }
-            }
-        }
-        return hamming;
     }
 
     private int manhattanToGoal(){
@@ -225,34 +145,6 @@ public class Node {
         return manhattan;
     }
 
-    private int manhattanToParent(){
-        if(this.parentState != null){
-            int manhattan = 0;
-            int current_num;
-
-            for(int i = 0; i < 3; i++){
-                for(int j = 0; j < 3; j++){
-                    if(currentState[i][j] == 0) continue;
-
-                    //get the tile number at i and j
-                    current_num = currentState[i][j];
-
-                    //compare indexes of current num to indexes of goal position
-                    for(int i_diff = 0; i_diff < 3; i_diff++) {
-                        for (int j_diff = 0; j_diff < 3; j_diff++) {
-                            if(parentState[i_diff][j_diff] == current_num){
-                                //add the absolute differences to int manhattan
-                                manhattan = manhattan + Math.abs(i - i_diff) + Math.abs(j - j_diff);
-                            }
-                        }
-                    }
-                }
-            }
-            return manhattan;
-        }
-        return 1000;
-    }
-
     private int hammingToGoal() { //number of tiles not in place
         int hamming = 0;
         for (int i = 0; i < 3; i++) {
@@ -263,20 +155,5 @@ public class Node {
             }
         }
         return hamming;
-    }
-
-    private int hammingToParent () {
-        if (this.parentState != null) {
-            int hamming = 0;
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    if (currentState[i][j] != parentState[i][j]) {
-                        hamming++;
-                    }
-                }
-            }
-            return hamming;
-        }
-        return 1000;
     }
 }

@@ -42,16 +42,14 @@ public class Solve {
         Node node_q = node_start.copyNode();
 
         //while the OPEN list is not empty
-        whileLoop:
-        while(openList.size() > 0){
+        while (openList.size() > 0) {
 
             //find the node with the least f on the open list, call it "node_q"
             node_q.setF(1000);
-            for(Node n: openList){
-                if(n.getF() < node_q.getF()){
+            for (Node n : openList) {
+                if (n.getF() < node_q.getF()) {
                     node_q = n.copyNode();
-                    if(isGoal(node_q)){
-                        //break whileLoop;
+                    if (isGoal(node_q)) {
                         return true;
                     }
                 }
@@ -63,20 +61,19 @@ public class Solve {
             nodes_successors = getSuccessors(node_q);
 
             //for each successor of node_q
-            forLoopSuccessor:
-            for(Node node_successor: nodes_successors){
+            loopThroughSuccessors:
+            for (Node node_successor : nodes_successors) {
 
-                if(isGoal(node_successor)){
-                    //break whileLoop;
+                if (isGoal(node_successor)) {
                     return true;
                 }
 
                 //else, compute both g and h for the successor
-                //successor.g = q.g + distance between successor and q
-
+                //successor.g = q.g + distance between successor and q (is always one)
                 node_successor.setG(
-                        node_q.getG() + node_successor.distanceToParent()
+                        node_q.getG() + 1
                 );
+
                 //successor.h = distance from goal to successor
                 node_successor.setH(node_successor.distanceToGoal());
 
@@ -85,34 +82,34 @@ public class Solve {
 
                 //if a node with the same board as successor is in the OPEN list
                 //which has a lower f than successor, skip this successor
-                for(Node n: openList){
-                    if(equal(n.getCurrentStateAsArray(), node_successor.getCurrentStateAsArray())){
-                        if(n.getF() < node_successor.getF()) continue forLoopSuccessor;
+                for (Node n : openList) {
+                    if (equal(n.getCurrentStateAsArray(), node_successor.getCurrentStateAsArray())) {
+                        if (n.getF() < node_successor.getF()) continue loopThroughSuccessors;
                     }
                 }
 
                 //if a node with the same board as successor is in the CLOSED list which has a lower f than successor,
                 //skip this successor, otherwise add the node to the open list
-                for(Node n: closedList){
-                    if(equal(n.getCurrentStateAsArray(), node_successor.getCurrentStateAsArray())){
-                        if(n.getF() < node_successor.getF()){
+                for (Node n : closedList) {
+                    if (equal(n.getCurrentStateAsArray(), node_successor.getCurrentStateAsArray())) {
+                        if (n.getF() < node_successor.getF()) {
                             openList.add(node_successor);
                             removeFromClosedList(node_successor);
-                            continue forLoopSuccessor;
+                            continue loopThroughSuccessors;
                         }
                     }
                 }
 
                 openList.add(node_successor.copyNode());
 
-                nodesVisited ++;
+                nodesVisited++;
             }
             //Add node_q to the CLOSED list
             closedList.add(node_q.copyNode());
 
-            nodesExpanded ++;
+            nodesExpanded++;
             //if(nodesExpanded % 1000 == 0) System.out.println(nodesExpanded + " nodes expanded.");
-            if(nodesExpanded > 20000){ //most puzzles are solved with less than 20000 expanded nodes
+            if (nodesExpanded > 20000) { //most puzzles are solved with less than 20000 expanded nodes
                 throw new Exception("Too difficult or unsolvable!");
             }
         }
@@ -206,6 +203,3 @@ public class Solve {
         return true;
     }
 }
-
-
-
