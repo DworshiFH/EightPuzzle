@@ -15,7 +15,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         while(true){
-            int[][] randomBoard = GetRandomBoard.randomBoard();
+            int[][] randomBoard = GetRandomBoard.getRandomBoard();
 
             int[][] initialState = new int[3][3];
 
@@ -57,7 +57,7 @@ public class Main {
                 }
                 if(!retry){
                     System.out.println("Trying another puzzle");
-                    randomBoard = GetRandomBoard.randomBoard();
+                    randomBoard = GetRandomBoard.getRandomBoard();
                     node = new Node(randomBoard, initialState, node.isUseManhattan());
                     solver = new Solve(node);
                 } else {

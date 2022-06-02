@@ -140,9 +140,9 @@ public class Node {
 
     public int distanceToInitial(){
         if(useManhattan){
-            return manhattan_G();
+            return manhattanToInitial();
         } else {
-            return hamming_G();
+            return hammingToInitial();
         }
     }
 
@@ -162,7 +162,7 @@ public class Node {
         }
     }
 
-    private int manhattan_G(){
+    private int manhattanToInitial(){
         int manhattan = 0;
         int node_current_num;
 
@@ -187,11 +187,11 @@ public class Node {
         return manhattan;
     }
 
-    private int hamming_G(){
+    private int hammingToInitial(){
         int hamming = 0;
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                if(currentState[i][j] != initialState[j][j]){
+                if(currentState[i][j] != initialState[i][j]){
                     hamming ++;
                 }
             }
@@ -253,11 +253,11 @@ public class Node {
         return 1000;
     }
 
-    public int hammingToGoal() { //number of tiles not in place
+    private int hammingToGoal() { //number of tiles not in place
         int hamming = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                if (currentState[i][j] != goalState[j][j]) {
+                if (currentState[i][j] != goalState[i][j]) {
                     hamming++;
                 }
             }
@@ -270,7 +270,7 @@ public class Node {
             int hamming = 0;
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (currentState[i][j] != parentState[j][j]) {
+                    if (currentState[i][j] != parentState[i][j]) {
                         hamming++;
                     }
                 }

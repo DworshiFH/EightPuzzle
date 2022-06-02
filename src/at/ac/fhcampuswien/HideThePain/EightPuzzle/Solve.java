@@ -96,7 +96,7 @@ public class Solve {
                 for(Node n: closedList){
                     if(equal(n.getCurrentStateAsArray(), node_successor.getCurrentStateAsArray())){
                         if(n.getF() < node_successor.getF()){
-                            openList.add(node_successor.copyNode());
+                            openList.add(node_successor);
                             removeFromClosedList(node_successor);
                             continue forLoopSuccessor;
                         }
@@ -112,7 +112,7 @@ public class Solve {
 
             nodesExpanded ++;
             //if(nodesExpanded % 1000 == 0) System.out.println(nodesExpanded + " nodes expanded.");
-            if(nodesExpanded > 10000){ //most puzzles are solved with less that 100000 expanded nodes
+            if(nodesExpanded > 20000){ //most puzzles are solved with less than 20000 expanded nodes
                 throw new Exception("Too difficult or unsolvable!");
             }
         }
@@ -198,7 +198,6 @@ public class Solve {
     }
 
     private boolean equal(int[][] node1, int[][] node2) {
-
         for (int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++){
                 if( node1[i][j] != node2[i][j] ) return false;
