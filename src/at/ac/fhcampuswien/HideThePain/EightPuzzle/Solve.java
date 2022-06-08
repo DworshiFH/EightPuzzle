@@ -17,17 +17,18 @@ public class Solve {
 
     private int nodesVisited;
 
-    public Solve(Node start){
+    public Solve(Node initial){
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                this.node_goal[i][j] = start.getGoalState()[i][j];
+                this.node_goal[i][j] = initial.getGoalState()[i][j];
             }
         }
-        this.node_start = start;
+        this.node_start = initial;
         this.nodesExpanded = 0;
+        this.nodesVisited = 0;
     }
 
-    public boolean solve() throws Exception {
+    public void solve() {
         //pseudo code source: https://www.geeksforgeeks.org/a-search-algorithm/
 
         //Put node_start in the OPEN list with f (node_start) = h(node_start) (initialization)
@@ -50,29 +51,29 @@ public class Solve {
                 if (n.getF() < node_q.getF()) {
                     node_q = n.copyNode();
                     if (isGoal(node_q)) {
-                        return true;
+                        return;
                     }
                 }
             }
             //pop q off the open list
             removeFromOpenList(node_q);
 
-            //generate q's successors
+            //generate q's successors, expand the node
             nodes_successors = getSuccessors(node_q);
+
+            nodesExpanded++;
 
             //for each successor of node_q
             loopThroughSuccessors:
             for (Node node_successor : nodes_successors) {
 
                 if (isGoal(node_successor)) {
-                    return true;
+                    return;
                 }
 
                 //else, compute both g and h for the successor
-                //successor.g = q.g + distance between successor and q (is always one)
-                node_successor.setG(
-                        node_q.getG() + 1
-                );
+                //successor.g = q.g + distance between successor and q (in our case is always one)
+                node_successor.setG(node_q.getG() + 1);
 
                 //successor.h = distance from goal to successor
                 node_successor.setH(node_successor.distanceToGoal());
@@ -88,13 +89,10 @@ public class Solve {
                     }
                 }
 
-                //if a node with the same board as successor is in the CLOSED list which has a lower f than successor,
-                //skip this successor, otherwise add the node to the open list
+                //if a node with the same board as successor is in the CLOSED list which has a lower f than successor, skip this successor
                 for (Node n : closedList) {
                     if (equal(n.getCurrentStateAsArray(), node_successor.getCurrentStateAsArray())) {
                         if (n.getF() < node_successor.getF()) {
-                            openList.add(node_successor);
-                            removeFromClosedList(node_successor);
                             continue loopThroughSuccessors;
                         }
                     }
@@ -106,14 +104,7 @@ public class Solve {
             }
             //Add node_q to the CLOSED list
             closedList.add(node_q.copyNode());
-
-            nodesExpanded++;
-            //if(nodesExpanded % 1000 == 0) System.out.println(nodesExpanded + " nodes expanded.");
-            if (nodesExpanded > 20000) { //most puzzles are solved with less than 20000 expanded nodes
-                throw new Exception("Too difficult or unsolvable!");
-            }
         }
-        return false;
     }
 
     private boolean isGoal(Node node){
@@ -137,6 +128,7 @@ public class Solve {
     }
 
     private ArrayList<Node> getSuccessors(Node node){
+        //returns all possible successors of a given node
 
         int indexZeroX = 0;
         int indexZeroY = 0;
@@ -179,6 +171,7 @@ public class Solve {
     }
 
     private void removeFromOpenList(Node node){
+        //removes ALL elements in openList that are equal to node.
         for(int i = 0; i < openList.size(); i++){
             if(equal(openList.get(i).getCurrentStateAsArray(), node.getCurrentStateAsArray())){
                 openList.remove(i);
@@ -186,15 +179,8 @@ public class Solve {
         }
     }
 
-    private void removeFromClosedList(Node node){
-        for(int i = 0; i < closedList.size(); i++){
-            if(equal(closedList.get(i).getCurrentStateAsArray(), node.getCurrentStateAsArray())){
-                closedList.remove(i);
-            }
-        }
-    }
-
     private boolean equal(int[][] node1, int[][] node2) {
+        //takes the respective board arrays of two nodes
         for (int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++){
                 if( node1[i][j] != node2[i][j] ) return false;

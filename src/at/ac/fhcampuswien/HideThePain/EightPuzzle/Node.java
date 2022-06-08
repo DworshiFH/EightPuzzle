@@ -6,21 +6,17 @@ public class Node {
 
     private final int[][] goalState;
 
-    private final int[][] initialState;
-
     private final boolean useManhattan;
 
     private int f = 0;
     private int g = 0;
     private int h = 0;
 
-    public Node(int[][] currentState, int[][] initialState, boolean useManhattan) {
+    public Node(int[][] currentState, boolean useManhattan) {
         this.currentState = currentState;
-        //generating a board will always return a solvable instance of an 8 Puzzle
         this.goalState = new int[][]{
                 {0, 1, 2}, {3, 4, 5}, {6, 7, 8}
         };
-        this.initialState = initialState;
         this.useManhattan = useManhattan;
     }
 
@@ -64,6 +60,8 @@ public class Node {
 
         int[][] retBoard = new int[3][3];
 
+        //cloning board state manually, .clone() on object references the inner objects
+        //of new Node's board to the inner objects of previous Node's board.
         for(int i = 0; i < 3; i++){
             System.arraycopy(currentState[i], 0, retBoard[i], 0, 3);
         }
@@ -83,14 +81,14 @@ public class Node {
                 retBoard[originX][originY] = currentState[targetX][targetY];
                 retBoard[targetX][targetY] = 0;
 
-                return new Node(retBoard, this.initialState, this.useManhattan);
+                return new Node(retBoard, this.useManhattan);
             }
         }
         return null;
     }
 
     public Node copyNode(){
-        //cloning Node manually, .clone() referenced the inner objects
+        //cloning Node manually, .clone() on object references the inner objects
         //of new Node's board to the inner objects of previous Node's board.
         int[][] newCurrentState = new int[3][3];
 
@@ -98,7 +96,7 @@ public class Node {
             System.arraycopy(this.currentState[i], 0, newCurrentState[i], 0, 3);
         }
 
-        Node ret = new Node(newCurrentState, this.initialState, this.useManhattan);
+        Node ret = new Node(newCurrentState, this.useManhattan);
 
         ret.setF(this.getF());
         ret.setG(this.getG());
