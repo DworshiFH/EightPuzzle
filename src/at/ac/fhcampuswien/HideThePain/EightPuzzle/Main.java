@@ -9,9 +9,9 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println("Which heuristic function do you wish to use?");
-        System.out.println("Press 0 to use Hamming");
-        System.out.println("Press 1 to use Manhattan (recommended)");
-        System.out.println("Press 2 to compare Manhattan and Hamming using the same initial board");
+        System.out.println("Press 0 to use Hamming.");
+        System.out.println("Press 1 to use Manhattan (recommended).");
+        System.out.println("Press 2 to compare Manhattan and Hamming using the same initial board.");
         System.out.println("Press 3 to quit the program.");
 
         Scanner scanner = new Scanner(System.in);
