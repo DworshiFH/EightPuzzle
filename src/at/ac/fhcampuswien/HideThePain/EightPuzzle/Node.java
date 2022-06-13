@@ -4,20 +4,12 @@ public class Node {
 
     private final int[][] currentState;
 
-    private final int[][] goalState;
-
-    private final boolean useManhattan;
-
     private int f = 0;
     private int g = 0;
     private int h = 0;
 
-    public Node(int[][] currentState, boolean useManhattan) {
+    public Node(int[][] currentState) {
         this.currentState = currentState;
-        this.goalState = new int[][]{
-                {0, 1, 2}, {3, 4, 5}, {6, 7, 8}
-        };
-        this.useManhattan = useManhattan;
     }
 
     public int[][] getCurrentStateAsArray() {
@@ -48,14 +40,6 @@ public class Node {
         this.h = h;
     }
 
-    public int[][] getGoalState() {
-        return goalState;
-    }
-
-    public boolean isUseManhattan() {
-        return useManhattan;
-    }
-
     public Node switchTiles(int originX, int originY, int targetX, int targetY){
 
         int[][] retBoard = new int[3][3];
@@ -81,7 +65,7 @@ public class Node {
                 retBoard[originX][originY] = currentState[targetX][targetY];
                 retBoard[targetX][targetY] = 0;
 
-                return new Node(retBoard, this.useManhattan);
+                return new Node(retBoard);
             }
         }
         return null;
@@ -96,7 +80,7 @@ public class Node {
             System.arraycopy(this.currentState[i], 0, newCurrentState[i], 0, 3);
         }
 
-        Node ret = new Node(newCurrentState, this.useManhattan);
+        Node ret = new Node(newCurrentState);
 
         ret.setF(this.getF());
         ret.setG(this.getG());
@@ -105,6 +89,7 @@ public class Node {
         return ret;
     }
 
+    /*
     public int distanceToGoal(){
         if(useManhattan){
             return manhattanToGoal();
@@ -149,5 +134,5 @@ public class Node {
             }
         }
         return hamming;
-    }
+    }*/
 }

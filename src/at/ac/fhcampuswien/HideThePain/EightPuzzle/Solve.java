@@ -7,7 +7,9 @@ public class Solve {
 
     private final Node node_start;
 
-    private final int[][] node_goal = new int[3][3];
+    private final int[][] node_goal = new int[][]{
+            {0, 1, 2}, {3, 4, 5}, {6, 7, 8}
+    };
 
     private final ArrayList<Node> openList = new ArrayList<>();
 
@@ -17,18 +19,16 @@ public class Solve {
 
     private int nodesVisited;
 
-    public Solve(Node initial){
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                this.node_goal[i][j] = initial.getGoalState()[i][j];
-            }
-        }
+    private final boolean useManhattan;
+
+    public Solve(Node initial, boolean useManhattan){
         this.node_start = initial;
         this.nodesExpanded = 0;
         this.nodesVisited = 0;
+        this.useManhattan = useManhattan;
     }
 
-    public void solve() {
+    public Statistics solve(boolean doResultPrint) {
         //pseudo code source: https://www.geeksforgeeks.org/a-search-algorithm/
 
         //Put node_start in the OPEN list with f (node_start) = h(node_start) (initialization)
@@ -42,6 +42,7 @@ public class Solve {
         ArrayList<Node> nodes_successors;
         Node node_q = node_start.copyNode();
 
+        long startTime = System.nanoTime();
         //while the OPEN list is not empty
         while (openList.size() > 0) {
 
@@ -50,8 +51,9 @@ public class Solve {
             for (Node n : openList) {
                 if (n.getF() < node_q.getF()) {
                     node_q = n.copyNode();
-                    if (isGoal(node_q)) {
-                        return;
+                    if (isGoal(node_q, doResultPrint)) {
+                        long elapsedTime = System.nanoTime() - startTime;
+                        return new Statistics(nodesExpanded, elapsedTime, node_start.getCurrentStateAsArray());
                     }
                 }
             }
@@ -67,8 +69,9 @@ public class Solve {
             loopThroughSuccessors:
             for (Node node_successor : nodes_successors) {
 
-                if (isGoal(node_successor)) {
-                    return;
+                if (isGoal(node_successor, doResultPrint)) {
+                    long elapsedTime = System.nanoTime() - startTime;
+                    return new Statistics(nodesExpanded, elapsedTime, node_start.getCurrentStateAsArray());
                 }
 
                 //else, compute both g and h for the successor
@@ -76,7 +79,11 @@ public class Solve {
                 node_successor.setG(node_q.getG() + 1);
 
                 //successor.h = distance from goal to successor
-                node_successor.setH(node_successor.distanceToGoal());
+                if(useManhattan){
+                    node_successor.setH(manhattanToGoal(node_successor));
+                } else {
+                    node_successor.setH(hammingToGoal(node_successor));
+                }
 
                 //successor.f = successor.g + successor.h
                 node_successor.setF(node_successor.getG() + node_successor.getH());
@@ -105,9 +112,11 @@ public class Solve {
             //Add node_q to the CLOSED list
             closedList.add(node_q.copyNode());
         }
+        long elapsedTime = System.nanoTime() - startTime;
+        return new Statistics(nodesExpanded, elapsedTime, node_start.getCurrentStateAsArray());
     }
 
-    private boolean isGoal(Node node){
+    private boolean isGoal(Node node, boolean doResultPrint){
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
                 if(node.getCurrentStateAsArray()[i][j] != node_goal[i][j]){
@@ -115,14 +124,17 @@ public class Solve {
                 }
             }
         }
-        System.out.println("Solved Puzzle:");
 
-        System.out.println(Arrays.toString(node.getCurrentStateAsArray()[0]));
-        System.out.println(Arrays.toString(node.getCurrentStateAsArray()[1]));
-        System.out.println(Arrays.toString(node.getCurrentStateAsArray()[2]));
+        if(doResultPrint){
+            System.out.println("Solved Puzzle:");
 
-        System.out.println("\nNodes expanded: " + nodesExpanded);
-        System.out.println("Nodes visited: " + nodesVisited);
+            System.out.println(Arrays.toString(node.getCurrentStateAsArray()[0]));
+            System.out.println(Arrays.toString(node.getCurrentStateAsArray()[1]));
+            System.out.println(Arrays.toString(node.getCurrentStateAsArray()[2]));
+
+            System.out.println("\nNodes expanded: " + nodesExpanded);
+            System.out.println("Nodes visited: " + nodesVisited);
+        }
 
         return true;
     }
@@ -187,5 +199,43 @@ public class Solve {
             }
         }
         return true;
+    }
+
+    private int manhattanToGoal(Node state){
+
+        int manhattan = 0;
+        int current_num;
+
+        for(int i = 0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                if(state.getCurrentStateAsArray()[i][j] == 0) continue;
+
+                //get the tile number at i and j
+                current_num = state.getCurrentStateAsArray()[i][j];
+
+                //compare indexes of current num to indexes of goal position
+                for(int i_diff = 0; i_diff < 3; i_diff++) {
+                    for (int j_diff = 0; j_diff < 3; j_diff++) {
+                        if(node_goal[i_diff][j_diff] == current_num){
+                            //add the absolute differences to int manhattan
+                            manhattan = manhattan + Math.abs(i - i_diff) + Math.abs(j - j_diff);
+                        }
+                    }
+                }
+            }
+        }
+        return manhattan;
+    }
+
+    private int hammingToGoal(Node state) { //number of tiles not in place
+        int hamming = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (state.getCurrentStateAsArray()[i][j] != node_goal[i][j]) {
+                    hamming++;
+                }
+            }
+        }
+        return hamming;
     }
 }
